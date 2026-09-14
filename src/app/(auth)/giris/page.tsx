@@ -29,17 +29,23 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    const res = await signIn('credentials', {
-      redirect: false,
-      identifier: formData.identifier,
-      password: formData.password,
-    });
-    setLoading(false);
+    try {
+      const res = await signIn('credentials', {
+        redirect: false,
+        identifier: formData.identifier.trim(),
+        password: formData.password,
+      });
 
-    if (res?.error) {
-      setError(res.error);
-    } else {
-      router.push('/panel');
+      setLoading(false);
+
+      if (res?.error) {
+        setError('E-posta / kullanıcı adı veya şifre hatalı.');
+      } else {
+        window.location.href = '/panel';
+      }
+    } catch {
+      setLoading(false);
+      setError('Giriş yapılırken bir hata oluştu. Bilgilerinizi kontrol edip tekrar deneyin.');
     }
   };
 

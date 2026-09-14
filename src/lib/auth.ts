@@ -22,8 +22,8 @@ export const authOptions: NextAuthConfig = {
         const user = await prisma.user.findFirst({
           where: {
             OR: [
-              { email: identifier },
-              { username: identifier },
+              { email: { equals: identifier.trim(), mode: 'insensitive' } },
+              { username: { equals: identifier.trim(), mode: 'insensitive' } },
             ],
           },
           include: {
@@ -33,15 +33,21 @@ export const authOptions: NextAuthConfig = {
           },
         });
 
-        if (!user || !user.hashedPassword) {
-          throw new Error('Geçersiz bilgiler.');
+        if (!user || !user.hashedPassword || !user.isActive) {
+          return null;
         }
 
         const isValid = await bcrypt.compare(password, user.hashedPassword);
 
         if (!isValid) {
-          throw new Error('Geçersiz bilgiler.');
+          return null;
         }
+
+        // Update last login
+        prisma.user.update({
+          where: { id: user.id },
+          data: { lastLoginAt: new Date() },
+        }).catch(() => {});
 
         return {
           id: user.id,
@@ -61,6 +67,17 @@ export const authOptions: NextAuthConfig = {
         token.id = user.id;
         token.username = (user as { username?: string }).username;
         token.roles = (user as { roles?: string[] }).roles;
+      } else if (token.id) {
+        // Refresh roles from DB to ensure immediate role updates
+        try {
+          const userRoles = await prisma.userRole.findMany({
+            where: { userId: token.id as string },
+            include: { role: true },
+          });
+          token.roles = userRoles.map((ur) => ur.role.name);
+        } catch {
+          // keep existing token.roles
+        }
       }
       return token;
     },
@@ -68,7 +85,7 @@ export const authOptions: NextAuthConfig = {
       if (token && session.user) {
         session.user.id = token.id as string;
         (session.user as unknown as { username?: string }).username = token.username as string;
-        (session.user as unknown as { roles?: string[] }).roles = token.roles as string[];
+        (session.user as unknown as { roles?: string[] }).roles = (token.roles as string[]) || [];
       }
       return session;
     },
