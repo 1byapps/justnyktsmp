@@ -1,6 +1,16 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Do not render public footer inside the admin panel
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="w-full bg-[var(--bg-primary)] border-t border-[var(--border)] pt-12 pb-8 mt-auto">
       <div className="container mx-auto px-4">

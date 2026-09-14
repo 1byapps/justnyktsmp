@@ -29,6 +29,11 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const { data: session, status: sessionStatus } = useSession();
+
+  // Do not render public navbar inside the admin panel
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
   const isLoggedIn = sessionStatus === 'authenticated' && !!session?.user;
   const userRoles = ((session?.user as unknown as { roles?: string[] })?.roles || []).map((r) => r.toLowerCase());
   const isAdmin = userRoles.includes('admin') || userRoles.includes('owner') || userRoles.includes('moderator') || userRoles.includes('developer');

@@ -64,3 +64,78 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: "Sunucu hatası" }, { status: 500 });
   }
 }
+
+// PATCH: Update player balance or rankName
+export async function PATCH(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Yetkisiz" }, { status: 401 });
+    }
+    const roles = ((session.user as unknown as { roles?: string[] })?.roles || []).map((r) => r.toLowerCase());
+    const hasAdmin = roles.some((r) => ['owner', 'admin', 'moderator', 'developer'].includes(r));
+    if (!hasAdmin) {
+      return NextResponse.json({ success: false, error: "Yetkisiz işlem" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { id, balance, rankName } = body;
+    if (!id) {
+      return NextResponse.json({ success: false, error: "Oyuncu ID gerekli" }, { status: 400 });
+    }
+
+    const updated = await prisma.minecraftPlayer.update({
+      where: { id },
+      data: {
+        balance: typeof balance === 'number' ? balance : undefined,
+        rankName: typeof rankName === 'string' ? rankName : undefined,
+      },
+    });
+
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error) {
+    console.error("Update player error:", error);
+    return NextResponse.json({ success: false, error: "Güncelleme başarısız" }, { status: 500 });
+  }
+}
+
+// POST: Punish player (BAN, MUTE, UNBAN)
+export async function POST(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session?.user) {
+      return NextResponse.json({ success: false, error: "Yetkisiz" }, { status: 401 });
+    }
+    const roles = ((session.user as unknown as { roles?: string[] })?.roles || []).map((r) => r.toLowerCase());
+    const hasAdmin = roles.some((r) => ['owner', 'admin', 'moderator', 'developer'].includes(r));
+    if (!hasAdmin) {
+      return NextResponse.json({ success: false, error: "Yetkisiz işlem" }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { playerId, action, type, reason } = body;
+
+    if (action === 'unban') {
+      await prisma.punishment.updateMany({
+        where: { playerId, isActive: true },
+        data: { isActive: false, revokedAt: new Date(), revokedBy: session.user.name || 'Admin' },
+      });
+      return NextResponse.json({ success: true, message: "Cezalar kaldırıldı" });
+    }
+
+    const punishment = await prisma.punishment.create({
+      data: {
+        playerId,
+        staffName: session.user.name || "Admin",
+        type: type || "BAN",
+        reason: reason || "Yönetici tarafından cezalandırıldı",
+        isActive: true,
+      },
+    });
+
+    return NextResponse.json({ success: true, data: punishment });
+  } catch (error) {
+    console.error("Punish player error:", error);
+    return NextResponse.json({ success: false, error: "Ceza işlemi başarısız" }, { status: 500 });
+  }
+}
