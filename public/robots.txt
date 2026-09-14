@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /panel/
+Disallow: /api/
+
+Sitemap: https://justnyktsmp.net/sitemap.xml

@@ -1,0 +1,596 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── AUTH & USERS ───────────────────────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  username       String    @unique
+  hashedPassword String
+  emailVerified  DateTime?
+  image          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  isActive       Boolean   @default(true)
+  lastLoginAt    DateTime?
+  lastLoginIp    String?
+
+  profile       Profile?
+  userRoles     UserRole[]
+  tickets       Ticket[]
+  ticketMessages TicketMessage[]
+  orders        Order[]
+  votes         Vote[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+  minecraftPlayer MinecraftPlayer?
+
+  @@index([email])
+  @@index([username])
+}
+
+model Profile {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  displayName   String?
+  bio           String?
+  avatarUrl     String?
+  discordId     String?
+  discordTag    String?
+  minecraftUuid String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─── RBAC ───────────────────────────────────────────────────
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String
+  description String?
+  color       String?
+  priority    Int      @default(0)
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+}
+
+model Permission {
+  id          String @id @default(cuid())
+  key         String @unique
+  displayName String
+  description String?
+  category    String
+
+  rolePermissions RolePermission[]
+
+  @@index([category])
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String @id @default(cuid())
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+// ─── MINECRAFT PLAYERS ──────────────────────────────────────
+
+model MinecraftPlayer {
+  id            String    @id @default(cuid())
+  uuid          String    @unique
+  username      String    @unique
+  userId        String?   @unique
+  rankName      String?
+  balance       Float     @default(0)
+  playtimeMinutes Int     @default(0)
+  kills         Int       @default(0)
+  deaths        Int       @default(0)
+  level         Int       @default(1)
+  experience    Int       @default(0)
+  questsCompleted Int     @default(0)
+  blocksBroken  BigInt    @default(0)
+  fishCaught    Int       @default(0)
+  firstJoinAt   DateTime  @default(now())
+  lastSeenAt    DateTime  @default(now())
+  isOnline      Boolean   @default(false)
+
+  user         User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clanMember   ClanMember?
+  punishments  Punishment[]
+
+  @@index([username])
+  @@index([uuid])
+  @@index([balance])
+  @@index([playtimeMinutes])
+  @@index([kills])
+  @@index([level])
+}
+
+// ─── CLANS ──────────────────────────────────────────────────
+
+model Clan {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  tag         String   @unique
+  slug        String   @unique
+  description String?
+  avatarUrl   String?
+  level       Int      @default(1)
+  balance     Float    @default(0)
+  score       Int      @default(0)
+  maxMembers  Int      @default(10)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members ClanMember[]
+
+  @@index([slug])
+  @@index([score])
+}
+
+enum ClanRole {
+  OWNER
+  OFFICER
+  MEMBER
+}
+
+model ClanMember {
+  id        String   @id @default(cuid())
+  clanId    String
+  playerId  String   @unique
+  role      ClanRole @default(MEMBER)
+  joinedAt  DateTime @default(now())
+
+  clan   Clan            @relation(fields: [clanId], references: [id], onDelete: Cascade)
+  player MinecraftPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
+}
+
+// ─── NEWS ───────────────────────────────────────────────────
+
+model NewsCategory {
+  id          String @id @default(cuid())
+  name        String @unique
+  slug        String @unique
+  color       String @default("#10b981")
+  sortOrder   Int    @default(0)
+
+  articles News[]
+}
+
+enum NewsStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model News {
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  summary       String
+  content       String
+  coverImage    String?
+  categoryId    String
+  authorName    String
+  authorAvatar  String?
+  status        NewsStatus @default(DRAFT)
+  tags          String[]
+  seoTitle      String?
+  seoDescription String?
+  publishedAt   DateTime?
+  scheduledAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  category NewsCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([categoryId])
+}
+
+// ─── WIKI ───────────────────────────────────────────────────
+
+model WikiCategory {
+  id        String @id @default(cuid())
+  name      String @unique
+  slug      String @unique
+  icon      String?
+  sortOrder Int    @default(0)
+
+  articles WikiArticle[]
+}
+
+model WikiArticle {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  content        String
+  categoryId     String
+  isPublished    Boolean  @default(false)
+  sortOrder      Int      @default(0)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  category WikiCategory @relation(fields: [categoryId], references: [id])
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isPublished])
+}
+
+// ─── RULES ──────────────────────────────────────────────────
+
+model RuleCategory {
+  id        String @id @default(cuid())
+  name      String @unique
+  slug      String @unique
+  sortOrder Int    @default(0)
+
+  rules Rule[]
+}
+
+model Rule {
+  id         String  @id @default(cuid())
+  categoryId String
+  title      String
+  content    String
+  ruleNumber Int
+  isActive   Boolean @default(true)
+  sortOrder  Int     @default(0)
+
+  category RuleCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+  @@index([sortOrder])
+}
+
+// ─── SHOP / MARKET ──────────────────────────────────────────
+
+model ProductCategory {
+  id        String @id @default(cuid())
+  name      String @unique
+  slug      String @unique
+  icon      String?
+  sortOrder Int    @default(0)
+
+  products Product[]
+}
+
+model Product {
+  id            String   @id @default(cuid())
+  name          String
+  slug          String   @unique
+  description   String
+  shortDescription String?
+  imageUrl      String?
+  categoryId    String
+  price         Float
+  discountPrice Float?
+  currency      String   @default("TRY")
+  isVisible     Boolean  @default(true)
+  inStock       Boolean  @default(true)
+  stockCount    Int?
+  sortOrder     Int      @default(0)
+  metadata      Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  category   ProductCategory @relation(fields: [categoryId], references: [id])
+  orderItems OrderItem[]
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([isVisible])
+}
+
+// ─── ORDERS & PAYMENTS ──────────────────────────────────────
+
+enum OrderStatus {
+  PENDING
+  PAID
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  userId          String
+  mcUsername       String?
+  subtotal        Float
+  discount        Float       @default(0)
+  total           Float
+  status          OrderStatus @default(PENDING)
+  couponId        String?
+  notes           String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id])
+  coupon   Coupon?     @relation(fields: [couponId], references: [id])
+  items    OrderItem[]
+  payment  Payment?
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id        String @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int    @default(1)
+  unitPrice Float
+  total     Float
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model Payment {
+  id              String        @id @default(cuid())
+  orderId         String        @unique
+  provider        String
+  providerTxId    String?
+  amount          Float
+  currency        String        @default("TRY")
+  status          PaymentStatus @default(PENDING)
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([providerTxId])
+}
+
+// ─── COUPONS ────────────────────────────────────────────────
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+model Coupon {
+  id            String       @id @default(cuid())
+  code          String       @unique
+  discountType  DiscountType
+  discountValue Float
+  minOrderAmount Float?
+  usageLimit    Int?
+  usageCount    Int          @default(0)
+  isActive      Boolean      @default(true)
+  startsAt      DateTime?
+  expiresAt     DateTime?
+  createdAt     DateTime     @default(now())
+
+  orders Order[]
+
+  @@index([code])
+}
+
+// ─── SUPPORT TICKETS ────────────────────────────────────────
+
+enum TicketStatus {
+  OPEN
+  IN_REVIEW
+  WAITING_USER
+  RESOLVED
+  CLOSED
+}
+
+enum TicketCategory {
+  TECHNICAL
+  PURCHASE
+  PLAYER_REPORT
+  BAN_APPEAL
+  BUG_REPORT
+  OTHER
+}
+
+model Ticket {
+  id          String         @id @default(cuid())
+  userId      String
+  subject     String
+  category    TicketCategory
+  status      TicketStatus   @default(OPEN)
+  mcUsername   String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  closedAt    DateTime?
+
+  user     User            @relation(fields: [userId], references: [id])
+  messages TicketMessage[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model TicketMessage {
+  id           String   @id @default(cuid())
+  ticketId     String
+  userId       String
+  content      String
+  isStaffReply Boolean  @default(false)
+  attachmentUrl String?
+  createdAt    DateTime @default(now())
+
+  ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@index([ticketId])
+}
+
+// ─── VOTING ─────────────────────────────────────────────────
+
+model VoteSite {
+  id        String @id @default(cuid())
+  name      String
+  url       String
+  reward    String
+  cooldownHours Int @default(24)
+  sortOrder Int    @default(0)
+  isActive  Boolean @default(true)
+
+  votes Vote[]
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  userId    String
+  siteId    String
+  votedAt   DateTime @default(now())
+
+  user User     @relation(fields: [userId], references: [id])
+  site VoteSite @relation(fields: [siteId], references: [id])
+
+  @@index([userId])
+  @@index([siteId])
+  @@index([votedAt])
+}
+
+// ─── PUNISHMENTS ────────────────────────────────────────────
+
+enum PunishmentType {
+  BAN
+  TEMPBAN
+  MUTE
+  TEMPMUTE
+  KICK
+  WARNING
+}
+
+model Punishment {
+  id          String         @id @default(cuid())
+  playerId    String
+  staffName   String
+  type        PunishmentType
+  reason      String
+  isActive    Boolean        @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime       @default(now())
+  revokedAt   DateTime?
+  revokedBy   String?
+
+  player MinecraftPlayer @relation(fields: [playerId], references: [id])
+
+  @@index([playerId])
+  @@index([type])
+  @@index([isActive])
+}
+
+// ─── NOTIFICATIONS ──────────────────────────────────────────
+
+enum NotificationType {
+  TICKET_REPLY
+  PURCHASE
+  ANNOUNCEMENT
+  SECURITY
+  ADMIN_ALERT
+  SYSTEM
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  link      String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ─── AUDIT LOGS ─────────────────────────────────────────────
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  adminName   String
+  action      String
+  targetType  String?
+  targetId    String?
+  details     Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([action])
+  @@index([targetType])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// ─── SERVER STATISTICS ──────────────────────────────────────
+
+model ServerStatistics {
+  id           String   @id @default(cuid())
+  onlinePlayers Int
+  maxPlayers   Int
+  tps          Float?
+  ramUsageMb   Int?
+  cpuUsage     Float?
+  recordedAt   DateTime @default(now())
+
+  @@index([recordedAt])
+}
+
+// ─── SETTINGS ───────────────────────────────────────────────
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  type  String @default("string")
+
+  @@index([key])
+}
