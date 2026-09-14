@@ -9,63 +9,43 @@ export const metadata: Metadata = {
   description: 'JustNyktSMP sunucusundan en son haberler, güncellemeler ve duyurular.',
 };
 
-export default function NewsPage({ searchParams }: { searchParams: { category?: string, page?: string } }) {
-  const currentCategory = searchParams.category || 'Tümü';
-  
-  const categories = ['Tümü', 'Güncelleme', 'Etkinlik', 'Duyuru', 'Bakım', 'Sezon'];
-  
-  // Mock data
-  const news = [
-    {
-      id: 1,
-      title: 'Sezon 2 Başlıyor! Yeni Özellikler ve Dahası',
-      summary: 'Uzun süredir beklenen 2. Sezon nihayet burada. Yeni görevler, güncellenmiş pazar dinamikleri ve tamamen yenilenmiş klan sistemi ile karşınızdayız.',
-      category: 'Sezon',
-      date: '14 Eylül 2026',
-      author: 'Yönetim',
-      slug: 'sezon-2-basliyor',
-    },
-    {
-      id: 2,
-      title: 'Hafta Sonu XP Etkinliği',
-      summary: 'Bu hafta sonu tüm sunucuda x2 XP etkinliği aktif olacak. Balık tutma, madencilik ve mob kesimlerinden çifte tecrübe kazanın.',
-      category: 'Etkinlik',
-      date: '12 Eylül 2026',
-      author: 'Rehber',
-      slug: 'hafta-sonu-xp-etkinligi',
-    },
-    {
-      id: 3,
-      title: 'Ekonomi Dengeleme Güncellemesi v1.4',
-      summary: 'Market fiyatlarında ve bazı eşyaların satış değerlerinde düzenlemeler yapıldı. Amacımız daha dengeli ve uzun ömürlü bir ekonomi sağlamak.',
-      category: 'Güncelleme',
-      date: '10 Eylül 2026',
-      author: 'Geliştirici',
-      slug: 'ekonomi-dengeleme-guncellemesi',
-    },
-    {
-      id: 4,
-      title: 'Planlı Bakım Çalışması',
-      summary: 'Sunucu altyapısını güçlendirmek amacıyla bu gece 03:00 - 05:00 saatleri arasında planlı bakım çalışması yapılacaktır.',
-      category: 'Bakım',
-      date: '8 Eylül 2026',
-      author: 'Admin',
-      slug: 'planli-bakim-calismasi',
-    },
-    {
-      id: 5,
-      title: 'Discord Sunucusu Yenilendi',
-      summary: 'Discord sunucumuz yeni kanallar, roller ve destek sistemi ile tamamen yenilendi. Hemen katılın!',
-      category: 'Duyuru',
-      date: '5 Eylül 2026',
-      author: 'Yönetim',
-      slug: 'discord-sunucusu-yenilendi',
-    }
-  ];
+import { prisma } from '@/lib/prisma';
 
-  const filteredNews = currentCategory === 'Tümü' 
-    ? news 
-    : news.filter(item => item.category === currentCategory);
+export default async function NewsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; page?: string }>;
+}) {
+  const { category: categoryParam } = await searchParams;
+  const currentCategory = categoryParam || 'Tümü';
+
+  const [dbCategories, dbNews] = await Promise.all([
+    prisma.newsCategory.findMany({ orderBy: { sortOrder: 'asc' } }),
+    prisma.news.findMany({
+      where: {
+        status: 'PUBLISHED',
+        ...(currentCategory !== 'Tümü'
+          ? { category: { name: { equals: currentCategory, mode: 'insensitive' } } }
+          : {}),
+      },
+      orderBy: { publishedAt: 'desc' },
+      include: { category: true },
+    }),
+  ]);
+
+  const categories = ['Tümü', ...dbCategories.map((c) => c.name)];
+
+  const filteredNews = dbNews.map((n) => ({
+    id: n.id,
+    title: n.title,
+    summary: n.summary,
+    category: n.category.name,
+    date: n.publishedAt
+      ? new Date(n.publishedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+      : 'Yeni',
+    author: n.authorName,
+    slug: n.slug,
+  }));
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] py-12">

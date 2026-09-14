@@ -1,10 +1,21 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/Input';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ChevronDown, ChevronUp, ShieldAlert } from 'lucide-react';
 
-const rulesData = [
+interface RuleItem {
+  id: number | string;
+  title: string;
+  desc: string;
+}
+
+interface RuleCat {
+  category: string;
+  rules: RuleItem[];
+}
+
+const defaultRulesData: RuleCat[] = [
   {
     category: "Genel Kurallar",
     rules: [
@@ -73,41 +84,69 @@ const rulesData = [
 
 export default function RulesPage() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>(
-    rulesData.reduce((acc, cat) => ({ ...acc, [cat.category]: true }), {})
-  );
+  const [categoriesData, setCategoriesData] = useState<RuleCat[]>(defaultRulesData);
+  const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    async function loadRules() {
+      try {
+        const res = await fetch("/api/rules");
+        const json = await res.json();
+        if (json.success && json.data && json.data.length > 0) {
+          const mapped: RuleCat[] = json.data.map((cat: any) => ({
+            category: cat.name,
+            rules: (cat.rules || []).map((r: any) => ({
+              id: r.ruleNumber || r.id,
+              title: r.title,
+              desc: r.content,
+            })),
+          })).filter((c: RuleCat) => c.rules.length > 0);
+
+          if (mapped.length > 0) {
+            setCategoriesData(mapped);
+            setOpenCategories(mapped.reduce((acc, cat) => ({ ...acc, [cat.category]: true }), {}));
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("Rules API fetch error:", err);
+      }
+      setOpenCategories(defaultRulesData.reduce((acc, cat) => ({ ...acc, [cat.category]: true }), {}));
+    }
+    loadRules();
+  }, []);
 
   const toggleCategory = (category: string) => {
-    setOpenCategories(prev => ({ ...prev, [category]: !prev[category] }));
+    setOpenCategories((prev) => ({ ...prev, [category]: !prev[category] }));
   };
 
-  const filteredData = rulesData.map(cat => {
-    const filteredRules = cat.rules.filter(rule => 
-      rule.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredData = categoriesData.map((cat) => {
+    const filteredRules = cat.rules.filter((rule) =>
+      rule.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       rule.desc.toLowerCase().includes(searchQuery.toLowerCase())
     );
     return { ...cat, rules: filteredRules };
-  }).filter(cat => cat.rules.length > 0);
+  }).filter((cat) => cat.rules.length > 0);
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-12">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-4">
-            JustNyktSMP Topluluk Standartları
+            <ShieldAlert size={14} /> JustNyktSMP Topluluk Standartları
           </div>
           <h1 className="heading-xl font-exo text-[var(--text-primary)] mb-4">Sunucu Kuralları</h1>
-          <p className="text-[var(--text-secondary)] mb-8">
-            Adil, saygılı ve dengeli bir Normal SMP ortamı sağlamak için tüm oyuncularımızın aşağıdaki kurallara uyması zorunludur.
+          <p className="text-[var(--text-secondary)] mb-8 leading-relaxed">
+            Adil, saygılı ve dengeli bir Normal SMP ortamı sağlamak için tüm oyuncularımızın aşağıdaki kurallara uyması zorunludur. İhlaller durumunda cezai yaptırımlar uygulanır.
           </p>
-          
+
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-[var(--text-tertiary)]" />
             </div>
-            <Input 
-              type="text" 
-              placeholder="Kurallarda ara (Örn: hile, küfür, pvp, grief)..." 
+            <Input
+              type="text"
+              placeholder="Kurallarda ara (Örn: hile, küfür, pvp, grief, claim)..."
               className="pl-10 bg-[var(--bg-secondary)] border-[var(--border)] focus:border-emerald-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -118,13 +157,19 @@ export default function RulesPage() {
         <div className="space-y-6">
           {filteredData.length > 0 ? (
             filteredData.map((category) => (
-              <div key={category.category} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
-                <button 
+              <div
+                key={category.category}
+                className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm"
+              >
+                <button
                   onClick={() => toggleCategory(category.category)}
                   className="w-full flex items-center justify-between p-5 bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors text-left"
                 >
                   <h2 className="text-lg sm:text-xl font-semibold font-exo text-[var(--text-primary)]">
-                    {category.category} <span className="text-xs font-normal text-[var(--text-tertiary)] ml-2">({category.rules.length} kural)</span>
+                    {category.category}{' '}
+                    <span className="text-xs font-normal text-[var(--text-tertiary)] ml-2">
+                      ({category.rules.length} kural)
+                    </span>
                   </h2>
                   {openCategories[category.category] ? (
                     <ChevronUp className="text-[var(--text-secondary)] h-5 w-5" />
@@ -132,16 +177,18 @@ export default function RulesPage() {
                     <ChevronDown className="text-[var(--text-secondary)] h-5 w-5" />
                   )}
                 </button>
-                
+
                 {openCategories[category.category] && (
                   <div className="p-5 divide-y divide-[var(--border)]">
                     {category.rules.map((rule) => (
                       <div key={rule.id} className="py-4 first:pt-0 last:pb-0">
                         <h3 className="text-base font-medium text-[var(--text-primary)] mb-2 flex items-start gap-3">
-                          <span className="text-emerald-500 font-mono font-bold min-w-[28px]">§{rule.id}</span>
+                          <span className="text-emerald-500 font-mono font-bold min-w-[32px]">
+                            §{rule.id}
+                          </span>
                           {rule.title}
                         </h3>
-                        <p className="text-[var(--text-secondary)] pl-10 text-sm leading-relaxed">
+                        <p className="text-[var(--text-secondary)] pl-11 text-sm leading-relaxed">
                           {rule.desc}
                         </p>
                       </div>

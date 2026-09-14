@@ -1,41 +1,27 @@
+import { prisma } from '@/lib/prisma';
 import { Badge } from '@/components/ui/Badge';
 import { EmptyState } from '@/components/ui/EmptyState';
 import Link from 'next/link';
 
-export function LatestNews() {
-  // Mock data - replace with API fetch in real implementation
-  const news = [
-    {
-      id: 1,
-      title: 'Büyük Ejderha Savaşı & End Boyutu Açılışı!',
-      summary: 'End boyutu açılıyor! Tüm klanlar ve savaşçılar hazır olsun. Ejderhayı alt eden ekibe 500.000$ oyun parası ve Özel VIP ödülü verilecektir.',
-      category: 'Etkinlik',
-      date: 'Bu Cumartesi • 20:00',
-      author: 'JustNykt Yönetim',
-      slug: 'buyuk-ejderha-savasi-end-acilisi',
-      featured: true
-    },
-    {
-      id: 2,
-      title: 'v1.2 Güncellemesi: Yakınlık Sesli Sohbet & 3D Ses',
-      summary: 'Simple Voice Chat (3D konumsal ses) entegre edildi. Aikar optimizasyon bayrakları ile TPS performansı maksimum seviyeye çıkarıldı.',
-      category: 'Güncelleme',
-      date: '13 Eylül 2026',
-      author: 'JustNykt Dev',
-      slug: 'yakinlik-sesli-sohbet-guncellemesi',
-      featured: false
-    },
-    {
-      id: 3,
-      title: 'Nether & Maden Dünyaları Sıfırlandı!',
-      summary: 'Nether kaleleri ve maden bölgeleri taze kaynaklarla baştan oluşturuldu. Ana dünyadaki tüm claim arazileriniz ve sandıklarınız tamamen güvendedir.',
-      category: 'Yenilik',
-      date: '12 Eylül 2026',
-      author: 'Sunucu Ekibi',
-      slug: 'nether-ve-maden-dunyasi-sifirlandi',
-      featured: false
-    }
-  ];
+export async function LatestNews() {
+  const dbNews = await prisma.news.findMany({
+    where: { status: 'PUBLISHED' },
+    orderBy: { publishedAt: 'desc' },
+    take: 3,
+    include: { category: true },
+  });
+
+  const news = dbNews.map((n) => ({
+    id: n.id,
+    title: n.title,
+    summary: n.summary,
+    category: n.category.name,
+    date: n.publishedAt
+      ? new Date(n.publishedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+      : 'Yeni',
+    author: n.authorName,
+    slug: n.slug,
+  }));
 
   if (news.length === 0) {
     return (

@@ -3,38 +3,48 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await prisma.news.findFirst({
+    where: { slug },
+  });
+
   return {
-    title: `${params.slug.replace(/-/g, ' ').toUpperCase()} | JustNyktSMP`,
+    title: article ? `${article.title} | JustNyktSMP` : 'Haber | JustNyktSMP',
   };
 }
 
-export default function ArticlePage({ params }: { params: { slug: string } }) {
-  // In a real app, fetch data based on params.slug
-  const article = {
-    title: 'Sezon 2 Başlıyor! Yeni Özellikler ve Dahası',
-    content: `
-      <p>Uzun süredir beklenen 2. Sezon nihayet burada. Yeni görevler, güncellenmiş pazar dinamikleri ve tamamen yenilenmiş klan sistemi ile karşınızdayız.</p>
-      <h2>Yenilikler Neler?</h2>
-      <p>Sezon 2 ile birlikte sunucumuza birçok yeni özellik ekleniyor. İşte öne çıkan bazı değişiklikler:</p>
-      <ul>
-        <li><strong>Gelişmiş Klan Sistemi:</strong> Klanlar arası savaşlar artık daha adil ve stratejik. Klan seviyeleri eklendi.</li>
-        <li><strong>Ekonomi Dengelemesi:</strong> Tarım ürünlerinin fiyatları güncellendi, yeni meslekler eklendi.</li>
-        <li><strong>Özel Görevler:</strong> Günlük ve haftalık görevlerin ödülleri artırıldı.</li>
-      </ul>
-      <h2>Ne Zaman Başlıyor?</h2>
-      <p>Sezon 2, 14 Eylül Cumartesi günü saat 20:00'da (TSİ) aktif olacaktır. Eski sezon verileri arşivlenmiş olup, tüm oyuncularımız yeni bir başlangıç yapacaktır.</p>
-      <p>Yeni sezonda görüşmek üzere, iyi oyunlar dileriz!</p>
-    `,
-    category: 'Sezon',
-    date: '14 Eylül 2026',
-    author: 'Yönetim',
-  };
+export default async function ArticlePage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
 
-  if (!article) {
+  const dbArticle = await prisma.news.findFirst({
+    where: { slug },
+    include: { category: true },
+  });
+
+  if (!dbArticle) {
     notFound();
   }
+
+  const article = {
+    title: dbArticle.title,
+    content: dbArticle.content,
+    category: dbArticle.category.name,
+    date: dbArticle.publishedAt
+      ? new Date(dbArticle.publishedAt).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })
+      : 'Yeni',
+    author: dbArticle.authorName,
+  };
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] pb-20">
@@ -63,15 +73,21 @@ export default function ArticlePage({ params }: { params: { slug: string } }) {
 
           <h1 className="heading-xl font-exo text-[var(--text-primary)] mb-8">{article.title}</h1>
 
-          <div 
-            className="prose prose-invert prose-emerald max-w-none text-[var(--text-secondary)]
-              prose-headings:text-[var(--text-primary)] prose-headings:font-exo prose-headings:font-semibold
-              prose-a:text-emerald-400 hover:prose-a:text-emerald-300
-              prose-strong:text-[var(--text-primary)]
-              prose-ul:list-disc prose-ul:pl-6
-              prose-li:my-2"
-            dangerouslySetInnerHTML={{ __html: article.content }}
-          />
+          {article.content.includes('<p>') || article.content.includes('<div') ? (
+            <div 
+              className="prose prose-invert prose-emerald max-w-none text-[var(--text-secondary)]
+                prose-headings:text-[var(--text-primary)] prose-headings:font-exo prose-headings:font-semibold
+                prose-a:text-emerald-400 hover:prose-a:text-emerald-300
+                prose-strong:text-[var(--text-primary)]
+                prose-ul:list-disc prose-ul:pl-6
+                prose-li:my-2"
+              dangerouslySetInnerHTML={{ __html: article.content }}
+            />
+          ) : (
+            <div className="space-y-4 text-[var(--text-secondary)] leading-relaxed whitespace-pre-line text-sm sm:text-base">
+              {article.content}
+            </div>
+          )}
         </article>
       </div>
     </div>

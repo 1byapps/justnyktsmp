@@ -1,28 +1,52 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Loader2 } from 'lucide-react';
 import { Cart } from '@/components/shop/Cart';
 import { useCart } from '@/lib/cart-context';
 
-const categories = ['Tümü', 'Rütbeler', 'Anahtarlar', 'Kozmetik', 'Paketler', 'Destek Paketleri'];
-
-// Mock products
-const products = [
-  { id: 'vip', name: 'VIP Rütbesi', desc: '1 aylık VIP rütbesi ve ayrıcalıkları. Özel prefix, kit ve daha fazlası.', price: 50, category: 'Rütbeler', slug: 'vip-rutbesi' },
-  { id: 'vip-plus', name: 'VIP+ Rütbesi', desc: '1 aylık VIP+ rütbesi. Tüm VIP özellikleri ve ek avantajlar.', price: 100, category: 'Rütbeler', slug: 'vip-plus-rutbesi' },
-  { id: 'mvp', name: 'MVP Rütbesi', desc: 'Sınırsız MVP rütbesi. Sunucunun en yüksek rütbesi.', price: 300, discountPrice: 250, category: 'Rütbeler', slug: 'mvp-rutbesi' },
-  { id: 'key-vote', name: 'Oy Kasası Anahtarı x5', desc: 'Oy kasasını 5 kez açmanızı sağlar.', price: 20, category: 'Anahtarlar', slug: 'oy-kasasi-anahtari-5x' },
-  { id: 'key-epic', name: 'Epik Kasa Anahtarı', desc: 'Epik kasayı 1 kez açmanızı sağlar. Nadir eşyalar içerir.', price: 50, category: 'Anahtarlar', slug: 'epik-kasa-anahtari' },
-  { id: 'bundle-starter', name: 'Başlangıç Paketi', desc: 'Maceraya hızlı başlamak için ihtiyacınız olan her şey.', price: 150, discountPrice: 120, category: 'Paketler', slug: 'baslangic-paketi' },
-];
+interface ProductItem {
+  id: string;
+  name: string;
+  desc?: string;
+  price: number;
+  discountPrice?: number;
+  category: string;
+  slug: string;
+  imageUrl?: string;
+}
 
 export default function MarketPage() {
+  const [categories, setCategories] = useState<string[]>(['Tümü', 'Rütbeler', 'Anahtarlar', 'Kozmetik', 'Paketler']);
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('Tümü');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { state, addItem } = useCart();
+
+  useEffect(() => {
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        if (data.success && data.data) {
+          if (data.data.items && data.data.items.length > 0) {
+            setProducts(data.data.items);
+          }
+          if (data.data.categories && data.data.categories.length > 0) {
+            setCategories(data.data.categories);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load products:', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadProducts();
+  }, []);
 
   const filteredProducts = activeCategory === 'Tümü' 
     ? products 
