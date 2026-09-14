@@ -8,8 +8,13 @@ export async function GET(
   try {
     const { username } = await params;
 
-    const player = await prisma.minecraftPlayer.findUnique({
-      where: { username },
+    const player = await prisma.minecraftPlayer.findFirst({
+      where: {
+        username: {
+          equals: username,
+          mode: "insensitive",
+        },
+      },
       include: {
         clanMember: {
           include: {

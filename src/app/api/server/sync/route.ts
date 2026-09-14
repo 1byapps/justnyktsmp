@@ -31,27 +31,39 @@ export async function POST(request: NextRequest) {
 
     // 1. Single player join/quit or update
     if (action === "player_update" && player) {
+      const webUser = await prisma.user.findFirst({
+        where: { username: { equals: player.username, mode: "insensitive" } },
+      });
+
       await prisma.minecraftPlayer.upsert({
         where: { uuid: player.uuid },
         create: {
           uuid: player.uuid,
           username: player.username,
+          rankName: player.rankName || undefined,
           isOnline: Boolean(player.isOnline),
           playtimeMinutes: player.playtimeMinutes || 0,
           kills: player.kills || 0,
           deaths: player.deaths || 0,
           level: player.level || 1,
           balance: player.balance || 0,
+          blocksBroken: player.blocksBroken !== undefined ? BigInt(player.blocksBroken) : BigInt(0),
+          fishCaught: player.fishCaught || 0,
+          userId: webUser ? webUser.id : undefined,
           lastSeenAt: new Date(),
         },
         update: {
           username: player.username,
+          rankName: player.rankName !== undefined ? player.rankName : undefined,
           isOnline: Boolean(player.isOnline),
           playtimeMinutes: player.playtimeMinutes !== undefined ? player.playtimeMinutes : undefined,
           kills: player.kills !== undefined ? player.kills : undefined,
           deaths: player.deaths !== undefined ? player.deaths : undefined,
           level: player.level !== undefined ? player.level : undefined,
           balance: player.balance !== undefined ? player.balance : undefined,
+          blocksBroken: player.blocksBroken !== undefined ? BigInt(player.blocksBroken) : undefined,
+          fishCaught: player.fishCaught !== undefined ? player.fishCaught : undefined,
+          userId: webUser ? webUser.id : undefined,
           lastSeenAt: new Date(),
         },
       });
@@ -59,30 +71,42 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: "Oyuncu eşitlendi" });
     }
 
-    // 2. Bulk sync for all online players
+    // 2. Bulk sync for players
     if (action === "sync_all" && Array.isArray(players)) {
       for (const p of players) {
+        const webUser = await prisma.user.findFirst({
+          where: { username: { equals: p.username, mode: "insensitive" } },
+        });
+
         await prisma.minecraftPlayer.upsert({
           where: { uuid: p.uuid },
           create: {
             uuid: p.uuid,
             username: p.username,
-            isOnline: true,
+            rankName: p.rankName || undefined,
+            isOnline: p.isOnline !== undefined ? Boolean(p.isOnline) : true,
             playtimeMinutes: p.playtimeMinutes || 0,
             kills: p.kills || 0,
             deaths: p.deaths || 0,
             level: p.level || 1,
             balance: p.balance || 0,
+            blocksBroken: p.blocksBroken !== undefined ? BigInt(p.blocksBroken) : BigInt(0),
+            fishCaught: p.fishCaught || 0,
+            userId: webUser ? webUser.id : undefined,
             lastSeenAt: new Date(),
           },
           update: {
             username: p.username,
-            isOnline: true,
+            rankName: p.rankName !== undefined ? p.rankName : undefined,
+            isOnline: p.isOnline !== undefined ? Boolean(p.isOnline) : true,
             playtimeMinutes: p.playtimeMinutes !== undefined ? p.playtimeMinutes : undefined,
             kills: p.kills !== undefined ? p.kills : undefined,
             deaths: p.deaths !== undefined ? p.deaths : undefined,
             level: p.level !== undefined ? p.level : undefined,
             balance: p.balance !== undefined ? p.balance : undefined,
+            blocksBroken: p.blocksBroken !== undefined ? BigInt(p.blocksBroken) : undefined,
+            fishCaught: p.fishCaught !== undefined ? p.fishCaught : undefined,
+            userId: webUser ? webUser.id : undefined,
             lastSeenAt: new Date(),
           },
         });
