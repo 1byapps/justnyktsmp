@@ -8,37 +8,65 @@ const rulesData = [
   {
     category: "Genel Kurallar",
     rules: [
-      { id: 1, title: "Saygı ve Nezaket", desc: "Tüm oyunculara ve yetkililere saygılı davranmak zorunludur. Din, dil, ırk, cinsiyet veya herhangi bir kişisel özellik üzerinden ayrımcılık yapılamaz." },
-      { id: 2, title: "Reklam Yasak", desc: "Başka sunucuların, Discord hesaplarının, Twitch/YouTube kanallarının vb. reklamını yapmak (yazılı veya sözlü) kesinlikle yasaktır." },
-      { id: 3, title: "Kişisel Bilgi Gizliliği", desc: "Kendinizin veya bir başkasının kişisel bilgilerini (adres, telefon, gerçek isim, vb.) paylaşmak yasaktır." },
-      { id: 4, title: "Açık Kullanımı", desc: "Oyun içi bir hata (bug/exploit) bulursanız bunu kullanmak yerine derhal yönetime bildirmelisiniz." },
-      { id: 5, title: "Yetkili Kararları", desc: "Yetkililerin verdiği kararlar nihaidir. İtirazlarınızı saygılı bir şekilde destek talebi açarak yapabilirsiniz." }
+      { id: 1, title: "Saygı ve Nezaket", desc: "Tüm oyunculara ve yetkililere saygılı davranmak zorunludur. Din, dil, ırk, cinsiyet veya herhangi bir kişisel özellik üzerinden ayrımcılık kesinlikle yasaktır." },
+      { id: 2, title: "Reklam Yasak", desc: "Başka Minecraft sunucularının, harici Discord topluluklarının veya ticari platformların reklamını yapmak (yazılı veya sesli) kalıcı uzaklaştırma sebebidir." },
+      { id: 3, title: "Kişisel Bilgi Gizliliği (Doxxing)", desc: "Kendinizin veya bir başka oyuncunun gerçek isim, telefon, adres gibi kişisel bilgilerini paylaşmak kesinlikle yasaktır." },
+      { id: 4, title: "Hata Bildirimi ve Exploit", desc: "Oyun içi veya sunucu kaynaklı bir hata/açık (bug/exploit) bulursanız bunu avantaj sağlamak için kullanmak yasaktır; derhal yetkililere bildirilmelidir." },
+      { id: 5, title: "Yetkili Kararlarına Saygı", desc: "Yetkililerin verdiği kararlar nihaidir. İtirazlarınızı saygılı bir üslupla web sitemizdeki Destek Talebi üzerinden iletebilirsiniz." }
     ]
   },
   {
     category: "Sohbet Kuralları",
     rules: [
-      { id: 6, title: "Küfür ve Argo", desc: "Sohbette küfür etmek, aşırı argo kelimeler kullanmak, sansürleyerek küfretmek yasaktır." },
-      { id: 7, title: "Spam ve Flood", desc: "Aynı mesajı veya benzer kelimeleri arka arkaya göndermek (spam/flood) yasaktır." },
-      { id: 8, title: "Büyük Harf Kullanımı", desc: "Sohbette tamamen büyük harflerle (CAPS LOCK) konuşmak rahatsız edici olduğundan yasaktır." },
-      { id: 9, title: "Dil Kullanımı", desc: "Genel sohbette yalnızca Türkçe veya İngilizce dilleri kullanılabilir." }
+      { id: 6, title: "Küfür, Hakaret ve Argo", desc: "Genel sohbette küfür etmek, şahıslara veya ailevi değerlere hakaret etmek, kısaltma/noktalama ile sansürleyerek küfretmek yasaktır." },
+      { id: 7, title: "Spam ve Flood", desc: "Aynı mesajı, anlamsız harfleri veya komutları arka arkaya sohbete göndererek sohbet akışını bozmak yasaktır." },
+      { id: 8, title: "Büyük Harf Kullanımı (Caps Lock)", desc: "Sohbette bağırma hissi uyandıran sürekli büyük harflerle (CAPS LOCK) yazı yazmak yasaktır." },
+      { id: 9, title: "Siyaset ve Provokasyon", desc: "Sunucu sohbetinde siyasi, dini veya toplumsal kutuplaşma yaratacak tartışmalar başlatmak yasaktır." }
     ]
   },
   {
-    category: "Oyun İçi Davranış",
+    category: "Oyun İçi Davranış & Normal SMP",
     rules: [
-      { id: 10, title: "Griefing Yasak", desc: "Başkalarının yapılarını kırmak, zarar vermek veya izinsiz blok eklemek yasaktır. Claim alınmamış olsa bile saygı esastır." },
-      { id: 11, title: "Tuzak Kurmak", desc: "Oyuncuları kandırarak tuzaklara çekmek ve eşyalarını almak (TPA tuzağı vb.) yasaktır." },
-      { id: 12, title: "Lag Yaratacak Sistemler", desc: "Sunucuyu yoracak, lag yaratacak aşırı büyük kızıltaş (redstone) sistemleri veya aşırı mob farm'ları kurmak yasaktır." },
-      { id: 13, title: "Harita Bozumu", desc: "Doğayı gereksiz yere tahrip etmek (1x1 kuleler dikmek, dev çukurlar açmak) yasaktır." }
+      { id: 10, title: "Griefing ve İzinsiz Yıkım", desc: "Başkalarının emek vererek inşa ettiği yapıları kırmak, ateşe vermek, lav dökmek veya zarar vermek yasaktır. Korumasız alanlarda bile saygı esastır." },
+      { id: 11, title: "TPA Tuzağı ve Dolandırıcılık", desc: "Işınlanma isteği (TPA) kabul ettirip oyuncuyu tuzağa düşürerek eşyalarını almak veya öldürmek yasaktır." },
+      { id: 12, title: "Sunucu Performansını Düşürecek Sistemler", desc: "Sunucu TPS değerlerini düşürecek aşırı büyük kızıltaş döngüleri, sınırsız mob üretim alanları veya lag makineleri kurmak yasaktır." },
+      { id: 13, title: "Çevre ve Doğa Katliamı", desc: "Harita düzenini bozacak 1x1 lava/su kuleleri dikmek, havada asılı yapraklar bırakmak veya devasa anlamsız çukurlar açmak yasaktır." }
     ]
   },
   {
-    category: "Hile ve Exploit",
+    category: "Hile ve Exploit Yasakları",
     rules: [
-      { id: 14, title: "Hile Kullanımı", desc: "Oyun içi avantaj sağlayan herhangi bir hile (X-Ray, KillAura, Fly, vb.) kullanımı kalıcı uzaklaştırma sebebidir." },
-      { id: 15, title: "Makro ve Auto-Clicker", desc: "PvP veya blok kırmada avantaj sağlayan makro, auto-clicker kullanımı yasaktır." },
-      { id: 16, title: "İzin Verilmeyen İstemciler", desc: "Yalnızca izin verilen istemcilerle giriş yapılabilir. Hile içeren modifiye istemciler yasaktır." }
+      { id: 14, title: "Haksız Avantaj Sağlayan Hileler", desc: "X-Ray, KillAura, Fly, Speed, Reach, Auto-Totem, Baritone gibi oyun dengesini bozan her türlü üçüncü parti hile yazılımı kalıcı ban sebebidir." },
+      { id: 15, title: "Makro ve Otomatik Tıklayıcılar", desc: "PvP mücadelesinde, afk farm'larda veya blok kırmada insan reflekslerini aşan makro ve auto-clicker kullanımı yasaktır." },
+      { id: 16, title: "İzin Verilmeyen İstemci Modları", desc: "Yalnızca OptiFine, Sodium, Iris, Lunar/Badlion Client gibi performans ve kozmetik modlarına izin verilir. Freecam vb. modlar hile sayılır." }
+    ]
+  },
+  {
+    category: "Ticaret ve Ekonomi Kuralları",
+    rules: [
+      { id: 17, title: "Gerçek Para ile Ticaret (RMT)", desc: "Oyun içi eşyaları, paraları veya hesapları gerçek para (TL, kripto vb.) karşılığında oyuncular arasında satmak kesinlikle yasaktır." },
+      { id: 18, title: "Pazar Dolandırıcılığı", desc: "Pazara veya takas alanlarına yanıltıcı isimlerle eşya koymak veya oyuncuları kandırarak haksız kazanç sağlamak cezalandırılır." }
+    ]
+  },
+  {
+    category: "PvP ve Mücadele Kuralları",
+    rules: [
+      { id: 19, title: "Doğma Noktası Pususu (Spawn Kill)", desc: "Yeni başlayan veya doğma noktasından henüz çıkmış oyuncuları sürekli olarak öldürmek ve oyundan bezdirmek yasaktır." },
+      { id: 20, title: "Savaş Sırasında Oyundan Çıkma (Combat Log)", desc: "PvP mücadelesi esnasında eşyalarını kaybetmemek için oyundan çıkmak yasaktır; sistem tarafından otomatik cezalandırılırsınız." }
+    ]
+  },
+  {
+    category: "Klan ve Birlik Kuralları",
+    rules: [
+      { id: 21, title: "Klan İsimleri ve Kısaltmaları", desc: "Klan adlarında ve etiketlerinde (TAG) küfür, argo, nefret söylemi veya siyasi ifadeler kullanmak klanın feshine sebep olur." },
+      { id: 22, title: "Klan İçi İhanet ve Hırsızlık", desc: "Bir klana üye olup sandıkları boşaltarak veya yapıları patlatarak klandan ayrılmak yasaktır." }
+    ]
+  },
+  {
+    category: "Discord ve İletişim",
+    rules: [
+      { id: 23, title: "Ses Kanalları Kuralları", desc: "Ses kanallarında aşırı gürültü yapmak, ses değiştirici programlarla rahatsızlık vermek ve izinsiz ses kaydı almak yasaktır." },
+      { id: 24, title: "Yetkilileri Gereksiz Etiketleme", desc: "Yetkili ekibini gereksiz yere birden fazla kez etiketlemek veya özel mesajlardan spam yapmak yasaktır; destek talebi açınız." }
     ]
   }
 ];
@@ -65,9 +93,12 @@ export default function RulesPage() {
     <div className="min-h-screen bg-[var(--bg-primary)] py-12">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-4">
+            JustNyktSMP Topluluk Standartları
+          </div>
           <h1 className="heading-xl font-exo text-[var(--text-primary)] mb-4">Sunucu Kuralları</h1>
           <p className="text-[var(--text-secondary)] mb-8">
-            Adil ve keyifli bir oyun ortamı sağlamak için tüm oyuncularımızın aşağıdaki kurallara uyması beklenmektedir. Kuralları ihlal etmek, geçici veya kalıcı uzaklaştırmaya neden olabilir.
+            Adil, saygılı ve dengeli bir Normal SMP ortamı sağlamak için tüm oyuncularımızın aşağıdaki kurallara uyması zorunludur.
           </p>
           
           <div className="relative">
@@ -76,8 +107,8 @@ export default function RulesPage() {
             </div>
             <Input 
               type="text" 
-              placeholder="Kurallarda ara..." 
-              className="pl-10 bg-[var(--bg-secondary)] border-[var(--border)]"
+              placeholder="Kurallarda ara (Örn: hile, küfür, pvp, grief)..." 
+              className="pl-10 bg-[var(--bg-secondary)] border-[var(--border)] focus:border-emerald-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -87,18 +118,18 @@ export default function RulesPage() {
         <div className="space-y-6">
           {filteredData.length > 0 ? (
             filteredData.map((category) => (
-              <div key={category.category} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-xl overflow-hidden">
+              <div key={category.category} className="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-sm">
                 <button 
                   onClick={() => toggleCategory(category.category)}
                   className="w-full flex items-center justify-between p-5 bg-[var(--bg-secondary)] hover:bg-[var(--bg-tertiary)] transition-colors text-left"
                 >
-                  <h2 className="text-xl font-semibold font-exo text-[var(--text-primary)]">
-                    {category.category} <span className="text-sm font-normal text-[var(--text-tertiary)] ml-2">({category.rules.length})</span>
+                  <h2 className="text-lg sm:text-xl font-semibold font-exo text-[var(--text-primary)]">
+                    {category.category} <span className="text-xs font-normal text-[var(--text-tertiary)] ml-2">({category.rules.length} kural)</span>
                   </h2>
                   {openCategories[category.category] ? (
-                    <ChevronUp className="text-[var(--text-secondary)]" />
+                    <ChevronUp className="text-[var(--text-secondary)] h-5 w-5" />
                   ) : (
-                    <ChevronDown className="text-[var(--text-secondary)]" />
+                    <ChevronDown className="text-[var(--text-secondary)] h-5 w-5" />
                   )}
                 </button>
                 
@@ -106,11 +137,11 @@ export default function RulesPage() {
                   <div className="p-5 divide-y divide-[var(--border)]">
                     {category.rules.map((rule) => (
                       <div key={rule.id} className="py-4 first:pt-0 last:pb-0">
-                        <h3 className="text-lg font-medium text-[var(--text-primary)] mb-2 flex items-start gap-3">
-                          <span className="text-emerald-500 font-bold min-w-[24px]">{rule.id}.</span>
+                        <h3 className="text-base font-medium text-[var(--text-primary)] mb-2 flex items-start gap-3">
+                          <span className="text-emerald-500 font-mono font-bold min-w-[28px]">§{rule.id}</span>
                           {rule.title}
                         </h3>
-                        <p className="text-[var(--text-secondary)] pl-9 text-sm leading-relaxed">
+                        <p className="text-[var(--text-secondary)] pl-10 text-sm leading-relaxed">
                           {rule.desc}
                         </p>
                       </div>
@@ -120,8 +151,8 @@ export default function RulesPage() {
               </div>
             ))
           ) : (
-            <div className="text-center py-12 bg-[var(--bg-elevated)] rounded-xl border border-[var(--border)]">
-              <p className="text-[var(--text-secondary)]">Arama kriterlerinize uygun kural bulunamadı.</p>
+            <div className="text-center py-12 bg-[var(--bg-elevated)] rounded-2xl border border-[var(--border)]">
+              <p className="text-[var(--text-secondary)]">Arama kriterinize uygun bir kural bulunamadı.</p>
             </div>
           )}
         </div>

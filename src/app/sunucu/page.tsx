@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default function ServerPage() {
   const systems = [
-    { icon: Compass, title: 'Ekonomi', desc: 'Dengeli ve tamamen oyuncu odaklı bir piyasa. Sadece ticaret yaparak değil, meslekler ve görevlerle de gelişin.' },
-    { icon: Shield, title: 'Klanlar', desc: 'Arkadaşlarınızla bir araya gelip kendi imparatorluğunuzu kurun, topraklarınızı koruyun ve diğer klanlarla diplomatik ilişkiler geliştirin.' },
-    { icon: Pickaxe, title: 'Görevler', desc: 'Sıradan hayatta kalma rutininizi kıracak çeşitli günlük ve haftalık görevler. Tamamlayarak özel ödüller kazanın.' },
-    { icon: Users, title: 'Etkinlikler', desc: 'Hafta sonları düzenlenen sunucu çapında etkinlikler. Özel boss savaşları, parkur yarışları ve daha fazlası.' },
-    { icon: Sword, title: 'PvP Sistemi', desc: 'Adil ve kontrollü PvP mekanikleri. Sadece belirli alanlarda ve savaş etkinliklerinde yeteneklerinizi sergileyin.' },
-    { icon: Server, title: 'Dünya Yapısı', desc: 'Düzenli olarak güncellenen geniş ve zengin bir dünya. Yapılarınızı inşa edebileceğiniz güvenli bölgeler.' },
+    { icon: Compass, title: 'Dengeli Oyuncu Ekonomisi', desc: 'Pay-to-win olmayan, tamamen oyuncu emeğine ve ticaretine dayalı adil pazar sistemi.' },
+    { icon: Shield, title: 'Klan & Birlik Sistemi', desc: 'Arkadaşlarınızla klan kurun, bölgenizi geliştirin ve sunucunun en saygın birliği olmak için yükselin.' },
+    { icon: Pickaxe, title: 'Arazi & Sandık Güvenliği', desc: 'İnşa ettiğiniz yapıları ve sandıklarınızı koruma altına alarak kayıp ve keder yaşamadan huzurla oynayın.' },
+    { icon: Server, title: 'Geniş Sürüm Desteği', desc: 'Sunucumuz 1.21.4 tabanlıdır ancak geriye dönük eklentiler sayesinde 1.16 ve üzeri tüm sürümlerle bağlanabilirsiniz.' },
+    { icon: Sword, title: 'Adil PvP & Mücadele', desc: 'Hilesiz, net vuruş kayıtlarına sahip, yetenek ve ekipmanın konuştuğu dengeli savaş deneyimi.' },
+    { icon: Users, title: 'Aktif & Sıcak Topluluk', desc: 'Saygılı, samimi ve kurallara bağlı bir oyuncu kitlesi ile keyifli sohbetler ve ortak projeler.' },
   ];
 
   return (
@@ -22,9 +22,12 @@ export default function ServerPage() {
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
         <div className="mb-16 text-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-semibold mb-4">
+            Normal SMP Deneyimi
+          </div>
           <h1 className="heading-xl font-exo text-[var(--text-primary)] mb-6">JustNyktSMP Nedir?</h1>
           <p className="text-lg text-[var(--text-secondary)] leading-relaxed max-w-3xl mx-auto">
-            JustNyktSMP, klasik Minecraft hayatta kalma deneyimini modern RPG ögeleri ve güçlü bir topluluk yapısıyla harmanlayan yenilikçi bir sunucudur. Hedefimiz, oyuncuların kendi hikayelerini yazabilecekleri, adil ve rekabetçi bir ortam sunmaktır.
+            JustNyktSMP, pay-to-win unsurlarından arındırılmış, oyuncuların kendi emeğiyle yükseldiği saf ve dengeli bir <strong>Normal SMP (Survival Multiplayer)</strong> sunucusudur. Karmaşık minigame veya abartılı sistemler yerine; arkadaşlarınızla güvenle üs kurabileceğiniz, ticaret yapabileceğiniz ve hayatta kalabileceğiniz samimi bir topluluk sunuyoruz.
           </p>
         </div>
 
@@ -36,7 +39,7 @@ export default function ServerPage() {
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">1</div>
               <div>
                 <h3 className="text-[var(--text-primary)] font-medium mb-1">Minecraft Java Edition'ı Aç</h3>
-                <p className="text-sm text-[var(--text-secondary)]">Sunucumuz 1.21.x sürümlerini desteklemektedir.</p>
+                <p className="text-sm text-[var(--text-secondary)]">Önerilen sürüm <strong>1.21.4</strong> olmakla birlikte <strong>tüm sürümler (1.16+)</strong> ile giriş yapabilirsiniz.</p>
               </div>
             </div>
             <div className="flex items-start gap-4">
@@ -54,10 +57,10 @@ export default function ServerPage() {
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">4</div>
               <div className="w-full">
-                <h3 className="text-[var(--text-primary)] font-medium mb-2">IP Adresini Gir</h3>
-                <div className="flex items-center justify-between bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg p-3 w-full sm:w-2/3">
-                  <span className="font-mono text-emerald-400">play.justnyktsmp.net</span>
-                  <CopyButton value="play.justnyktsmp.net" />
+                <h3 className="text-[var(--text-primary)] font-medium mb-2">Sunucu Adresini Gir</h3>
+                <div className="flex items-center justify-between bg-[var(--bg-primary)] border border-[var(--border)] rounded-lg p-3 w-full sm:w-3/4">
+                  <span className="font-mono text-emerald-400 font-semibold text-sm sm:text-base truncate mr-2">schmidt-scanners.tun.ply.gg</span>
+                  <CopyButton value="schmidt-scanners.tun.ply.gg" />
                 </div>
               </div>
             </div>
@@ -65,7 +68,7 @@ export default function ServerPage() {
               <div className="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold">5</div>
               <div>
                 <h3 className="text-[var(--text-primary)] font-medium mb-1">JustNyktSMP'ye Katıl!</h3>
-                <p className="text-sm text-[var(--text-secondary)]">Kaydınızı oyun içinden tamamlayıp maceraya başlayabilirsiniz.</p>
+                <p className="text-sm text-[var(--text-secondary)]">Sunucuya bağlanıp maceranıza hemen başlayabilirsiniz.</p>
               </div>
             </div>
           </div>
@@ -73,7 +76,7 @@ export default function ServerPage() {
 
         {/* Core Systems */}
         <div className="mb-8">
-          <h2 className="heading-lg font-exo text-[var(--text-primary)] mb-10 text-center">Temel Sistemler</h2>
+          <h2 className="heading-lg font-exo text-[var(--text-primary)] mb-10 text-center">Temel Sunucu Özellikleri</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {systems.map((sys, idx) => {
               const Icon = sys.icon;

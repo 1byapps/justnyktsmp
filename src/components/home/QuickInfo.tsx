@@ -1,12 +1,12 @@
-import { Server, Box, Globe, MessageSquare, Users } from 'lucide-react';
+import { Server, Box, Globe, MessageSquare, ShieldCheck } from 'lucide-react';
 
 export function QuickInfo() {
   const infos = [
-    { icon: Globe, label: 'Sunucu IP', value: 'play.justnyktsmp.net' },
-    { icon: Box, label: 'Sürüm', value: '1.21.x' },
-    { icon: Server, label: 'Oyun Modu', value: 'Survival SMP' },
+    { icon: Globe, label: 'Sunucu IP', value: 'schmidt-scanners.tun.ply.gg' },
+    { icon: Box, label: 'Sürüm', value: '1.21.4 (Tüm Sürümler)' },
+    { icon: Server, label: 'Oyun Modu', value: 'Normal SMP' },
     { icon: MessageSquare, label: 'Discord', value: 'Aktif Topluluk' },
-    { icon: Users, label: 'Kayıtlı Oyuncu', value: '10,000+' }
+    { icon: ShieldCheck, label: 'Ekonomi & Güvenlik', value: 'Adil & Hilesiz' }
   ];
 
   return (
@@ -22,7 +22,7 @@ export function QuickInfo() {
                 </div>
                 <div>
                   <p className="text-xs text-[var(--text-secondary)] mb-0.5">{info.label}</p>
-                  <p className="text-sm font-medium text-[var(--text-primary)]">{info.value}</p>
+                  <p className="text-sm font-medium text-[var(--text-primary)] truncate max-w-[140px] sm:max-w-none" title={info.value}>{info.value}</p>
                 </div>
               </div>
             );

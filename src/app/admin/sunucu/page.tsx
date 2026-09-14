@@ -5,11 +5,11 @@ import { Server, Wifi, WifiOff, AlertTriangle, Save } from "lucide-react";
 
 export default function AdminServerPage() {
   const [settings, setSettings] = useState({
-    serverIp: "play.justnyktsmp.net",
-    displayAddress: "play.justnyktsmp.net",
-    serverVersion: "1.21.x",
-    maxPlayers: 500,
-    motd: "JustNyktSMP - Modern SMP Deneyimi",
+    serverIp: "schmidt-scanners.tun.ply.gg",
+    displayAddress: "schmidt-scanners.tun.ply.gg",
+    serverVersion: "1.21.4 (Tüm Sürümler)",
+    maxPlayers: 100,
+    motd: "JustNyktSMP - Normal SMP",
     discordUrl: "https://discord.gg/justnyktsmp",
     maintenanceMode: false,
   });
