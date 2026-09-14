@@ -1,36 +1,36 @@
-import { Scale, Store, Scroll, Shield, Trophy, RefreshCcw } from 'lucide-react';
+import { Briefcase, Store, Shield, Compass, HeartHandshake, Mic } from 'lucide-react';
 
 export function Features() {
   const features = [
     {
-      icon: Scale,
-      title: 'Dengeli Ekonomi',
-      description: 'Oyuncuların emek verdiği, pay-to-win olmayan dengeli bir ekonomi sistemi.'
+      icon: Briefcase,
+      title: 'Dengeli Meslekler & Ekonomi',
+      description: 'Madenci, Oduncu, Avcı, Balıkçı ve daha fazlası. Tamamen çalışmaya ve emeğe dayalı adil pazar (/jobs).'
     },
     {
       icon: Store,
-      title: 'Oyuncu Pazarı',
-      description: 'Oyuncuların birbirleriyle güvenli şekilde ticaret yapabileceği market sistemi.'
-    },
-    {
-      icon: Scroll,
-      title: 'Özel Görevler',
-      description: 'Günlük, haftalık ve sezonluk görevler.'
+      title: 'Açık Artırma & Güvenli Takas',
+      description: '/ah ile açık artırma pazarında eşya satın veya alın. /trade ile oyuncular arası hilesiz takas yapın.'
     },
     {
       icon: Shield,
-      title: 'Klan Sistemi',
-      description: 'Arkadaşlarınla klan kur, bölgeni geliştir ve diğer klanlarla rekabet et.'
+      title: 'Altın Kürek Claim & Sandık Kilidi',
+      description: 'Altın kürekle bölgenizi korumaya alın. [Ozel] tabela kilidi ile sandıklarınızı hırsızlığa karşı kilitleyin.'
     },
     {
-      icon: Trophy,
-      title: 'Etkinlikler',
-      description: 'Sunucu genelinde düzenlenen özel etkinlikler ve ödüller.'
+      icon: Compass,
+      title: '4 Dinamik Mevsim Döngüsü',
+      description: 'İlkbahar, Yaz, Sonbahar ve Kış. Sıcaklık, donma, mevsime özel hava şartları ve tarım etkileri.'
     },
     {
-      icon: RefreshCcw,
-      title: 'Sürekli Güncellemeler',
-      description: 'Oyuncu geri bildirimleri doğrultusunda aktif geliştirme.'
+      icon: HeartHandshake,
+      title: 'Mezar Koruma (GravesX)',
+      description: 'Öldüğünüzde eşyalarınız lavda yanmaz veya kaybolmaz. Korumalı mezarınızdan eşyalarınızı güvenle geri alın.'
+    },
+    {
+      icon: Mic,
+      title: '3D Sesli Sohbet & GSit Mekanikleri',
+      description: 'Simple Voice Chat ile konumsal 3D sesli sohbet. /sit ile oturma, /lay ile uzanma ve /crawl ile dar alanda sürünme.'
     }
   ];
 

@@ -2,11 +2,11 @@ import { Server, Box, Globe, MessageSquare, ShieldCheck } from 'lucide-react';
 
 export function QuickInfo() {
   const infos = [
-    { icon: Globe, label: 'Sunucu IP', value: 'schmidt-scanners.tun.ply.gg' },
-    { icon: Box, label: 'Sürüm', value: '1.21.4 (Tüm Sürümler)' },
-    { icon: Server, label: 'Oyun Modu', value: 'Normal SMP' },
-    { icon: MessageSquare, label: 'Discord', value: 'Aktif Topluluk' },
-    { icon: ShieldCheck, label: 'Ekonomi & Güvenlik', value: 'Adil & Hilesiz' }
+    { icon: Globe, label: 'Sunucu IP', value: 'schmidt-scanners.tun.ply.gg:64110' },
+    { icon: Box, label: 'Sürüm', value: '1.8 - 1.21.x & Bedrock' },
+    { icon: Server, label: 'Oyun Modu', value: 'Normal SMP & Lobi' },
+    { icon: MessageSquare, label: 'Discord', value: 'discord.gg/justnyktsmp' },
+    { icon: ShieldCheck, label: 'Özellikler', value: '4 Mevsim & Meslekler' }
   ];
 
   return (

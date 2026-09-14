@@ -7,32 +7,32 @@ export function LatestNews() {
   const news = [
     {
       id: 1,
-      title: 'Sezon 2 Başlıyor! Yeni Özellikler ve Dahası',
-      summary: 'Uzun süredir beklenen 2. Sezon nihayet burada. Yeni görevler, güncellenmiş pazar dinamikleri ve tamamen yenilenmiş klan sistemi ile karşınızdayız.',
-      category: 'Sezon',
-      date: '14 Eylül 2026',
-      author: 'Yönetim',
-      slug: 'sezon-2-basliyor',
+      title: 'Büyük Ejderha Savaşı & End Boyutu Açılışı!',
+      summary: 'End boyutu açılıyor! Tüm klanlar ve savaşçılar hazır olsun. Ejderhayı alt eden ekibe 500.000$ oyun parası ve Özel VIP ödülü verilecektir.',
+      category: 'Etkinlik',
+      date: 'Bu Cumartesi • 20:00',
+      author: 'JustNykt Yönetim',
+      slug: 'buyuk-ejderha-savasi-end-acilisi',
       featured: true
     },
     {
       id: 2,
-      title: 'Hafta Sonu XP Etkinliği',
-      summary: 'Bu hafta sonu tüm sunucuda x2 XP etkinliği aktif olacak. Balık tutma, madencilik ve mob kesimlerinden çifte tecrübe kazanın.',
-      category: 'Etkinlik',
-      date: '12 Eylül 2026',
-      author: 'Rehber',
-      slug: 'hafta-sonu-xp-etkinligi',
+      title: 'v1.2 Güncellemesi: Yakınlık Sesli Sohbet & 3D Ses',
+      summary: 'Simple Voice Chat (3D konumsal ses) entegre edildi. Aikar optimizasyon bayrakları ile TPS performansı maksimum seviyeye çıkarıldı.',
+      category: 'Güncelleme',
+      date: '13 Eylül 2026',
+      author: 'JustNykt Dev',
+      slug: 'yakinlik-sesli-sohbet-guncellemesi',
       featured: false
     },
     {
       id: 3,
-      title: 'Ekonomi Dengeleme Güncellemesi v1.4',
-      summary: 'Market fiyatlarında ve bazı eşyaların satış değerlerinde düzenlemeler yapıldı. Amacımız daha dengeli ve uzun ömürlü bir ekonomi sağlamak.',
-      category: 'Güncelleme',
-      date: '10 Eylül 2026',
-      author: 'Geliştirici',
-      slug: 'ekonomi-dengeleme-guncellemesi',
+      title: 'Nether & Maden Dünyaları Sıfırlandı!',
+      summary: 'Nether kaleleri ve maden bölgeleri taze kaynaklarla baştan oluşturuldu. Ana dünyadaki tüm claim arazileriniz ve sandıklarınız tamamen güvendedir.',
+      category: 'Yenilik',
+      date: '12 Eylül 2026',
+      author: 'Sunucu Ekibi',
+      slug: 'nether-ve-maden-dunyasi-sifirlandi',
       featured: false
     }
   ];

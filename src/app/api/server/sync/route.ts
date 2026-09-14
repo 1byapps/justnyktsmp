@@ -3,6 +3,18 @@ import { prisma } from "@/lib/prisma";
 
 const SYNC_API_KEY = process.env.SERVER_SYNC_KEY || "nykt_sync_secret_key_2026";
 
+async function recordServerHeartbeat() {
+  try {
+    await prisma.setting.upsert({
+      where: { key: "last_server_heartbeat" },
+      create: { key: "last_server_heartbeat", value: Date.now().toString() },
+      update: { value: Date.now().toString() },
+    });
+  } catch (e) {
+    console.error("Failed to record server heartbeat:", e);
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const authHeader = request.headers.get("X-API-Key") || request.headers.get("Authorization");
@@ -11,6 +23,8 @@ export async function POST(request: NextRequest) {
     if (apiKey !== SYNC_API_KEY && process.env.NODE_ENV === "production") {
       return NextResponse.json({ success: false, error: "Geçersiz API Anahtarı" }, { status: 401 });
     }
+
+    await recordServerHeartbeat();
 
     const body = await request.json();
     const { action, player, players } = body;
@@ -93,6 +107,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Geçersiz API Anahtarı" }, { status: 401 });
     }
 
+    await recordServerHeartbeat();
+
     // Find paid orders not yet marked as delivered
     const pendingOrders = await prisma.order.findMany({
       where: {
@@ -146,6 +162,8 @@ export async function PATCH(request: NextRequest) {
     if (apiKey !== SYNC_API_KEY && process.env.NODE_ENV === "production") {
       return NextResponse.json({ success: false, error: "Geçersiz API Anahtarı" }, { status: 401 });
     }
+
+    await recordServerHeartbeat();
 
     const { orderId } = await request.json();
     if (orderId) {

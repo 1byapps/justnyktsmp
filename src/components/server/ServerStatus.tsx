@@ -13,9 +13,9 @@ export function ServerStatus({ variant = 'compact', className }: ServerStatusPro
   const [loading, setLoading] = React.useState(true);
   const [status, setStatus] = React.useState({
     online: true,
-    players: { online: 0, max: 100 },
-    version: '1.21.4 (Tüm Sürümler)',
-    ip: 'schmidt-scanners.tun.ply.gg',
+    players: { online: 0, max: 20 },
+    version: '1.8 - 1.21.x (Java & Bedrock)',
+    ip: 'schmidt-scanners.tun.ply.gg:64110',
   });
 
   React.useEffect(() => {
@@ -26,9 +26,9 @@ export function ServerStatus({ variant = 'compact', className }: ServerStatusPro
         if (data.success && data.data) {
           setStatus({
             online: data.data.online,
-            players: data.data.players || { online: 0, max: 100 },
-            version: data.data.version || '1.21.4 (Tüm Sürümler)',
-            ip: data.data.ip || 'schmidt-scanners.tun.ply.gg',
+            players: data.data.players || { online: 0, max: 20 },
+            version: data.data.version || '1.8 - 1.21.x (Java & Bedrock)',
+            ip: data.data.ip || 'schmidt-scanners.tun.ply.gg:64110',
           });
         }
       } catch {
