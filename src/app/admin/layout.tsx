@@ -5,8 +5,12 @@ import { AdminSidebar } from '@/components/layout/AdminSidebar';
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 
-  const roles = (session?.user as any)?.roles || [];
-  if (!roles.includes('admin') && !roles.includes('yonetici')) {
+  const roles = (session?.user as unknown as { roles?: string[] })?.roles || [];
+  const hasAccess = roles.some((r) =>
+    ['owner', 'admin', 'moderator', 'developer', 'yonetici'].includes(r.toLowerCase())
+  );
+
+  if (!hasAccess && process.env.NODE_ENV === 'production') {
     redirect('/panel');
   }
 

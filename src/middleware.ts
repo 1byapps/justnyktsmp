@@ -1,29 +1,34 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { auth } from '@/lib/auth';
 
-export async function middleware(request: NextRequest) {
-  const session = await auth();
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isAuthPage = pathname.startsWith('/giris') || pathname.startsWith('/kayit') || pathname.startsWith('/sifremi-unuttum');
-  
-  if (isAuthPage && session) {
+  // Check for NextAuth v5 session cookie in edge runtime without heavy node libraries
+  const sessionToken =
+    request.cookies.get('authjs.session-token')?.value ||
+    request.cookies.get('__Secure-authjs.session-token')?.value ||
+    request.cookies.get('next-auth.session-token')?.value ||
+    request.cookies.get('__Secure-next-auth.session-token')?.value;
+
+  const hasSession = Boolean(sessionToken);
+
+  const isAuthPage =
+    pathname.startsWith('/giris') ||
+    pathname.startsWith('/kayit') ||
+    pathname.startsWith('/sifremi-unuttum');
+
+  if (isAuthPage && hasSession) {
     return NextResponse.redirect(new URL('/panel', request.url));
   }
 
   const isProtected = pathname.startsWith('/panel') || pathname.startsWith('/destek');
   const isAdmin = pathname.startsWith('/admin');
 
-  if ((isProtected || isAdmin) && !session) {
-    return NextResponse.redirect(new URL('/giris', request.url));
-  }
-
-  if (isAdmin) {
-    const roles = (session?.user as any)?.roles || [];
-    if (!roles.includes('admin') && !roles.includes('yonetici')) {
-      return NextResponse.redirect(new URL('/panel', request.url));
-    }
+  if ((isProtected || isAdmin) && !hasSession) {
+    const loginUrl = new URL('/giris', request.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   const response = NextResponse.next();
